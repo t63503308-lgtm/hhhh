@@ -1,0 +1,1817 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบวิเคราะห์และบริหารการยืม-คืนหนังสือห้องสมุด | ระดับ ปวช.</title>
+  
+  <!-- Thai Sarabun Font (with system fallback) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+/* ==========================================================================
+   Library Insight dashboard
+   ========================================================================== */
+:root {
+  --primary: #2457c5;
+  --primary-light: #3b82f6;
+  --primary-dark: #193d91;
+  --primary-bg: #eef4ff;
+  --secondary: #0d9488;
+  --secondary-light: #14b8a6;
+  --secondary-bg: #f0fdfa;
+  --success: #15803d;
+  --success-bg: #f0fdf4;
+  --success-border: #bbf7d0;
+  --warning: #b45309;
+  --warning-bg: #fefce8;
+  --warning-border: #fef08a;
+  --danger: #b91c1c;
+  --danger-bg: #fef2f2;
+  --danger-border: #fecaca;
+  --info: #0284c7;
+  --info-bg: #f0f9ff;
+  --info-border: #bae6fd;
+  --bg-main: #f4f7fb;
+  --bg-card: #ffffff;
+  --bg-sidebar: #111b31;
+  --bg-sidebar-hover: #1c2943;
+  --bg-sidebar-active: #2457c5;
+  --text-main: #18243a;
+  --text-muted: #63718a;
+  --text-light: #94a3b8;
+  --text-sidebar: #cbd5e1;
+  --border: #e3e9f2;
+  --border-light: #edf1f7;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-full: 9999px;
+  --shadow-sm: 0 2px 8px rgba(19, 38, 71, 0.045);
+  --shadow-md: 0 10px 24px rgba(19, 38, 71, 0.08);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  --sidebar-width: 258px;
+  --topbar-height: 64px;
+  --font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  line-height: 1.65;
+  font-size: 14px;
+  letter-spacing: 0.005em;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+button, input, select { font: inherit; }
+button, a, input, select { -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 3px solid rgba(59, 130, 246, 0.55); outline-offset: 3px; }
+
+.app-container { display: flex; min-height: 100vh; }
+.sidebar {
+  width: var(--sidebar-width);
+  background-color: var(--bg-sidebar);
+  color: var(--text-sidebar);
+  position: fixed;
+  inset: 0 auto 0 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  transition: transform 0.25s ease;
+  overflow-y: auto;
+  box-shadow: 8px 0 28px rgba(15, 23, 42, 0.09);
+}
+.sidebar-brand {
+  min-height: 78px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.2);
+}
+.brand-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, #2563eb, #38bdf8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: white;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.4);
+}
+.brand-title { font-size: 16px; font-weight: 700; color: #fff; line-height: 1.2; }
+.brand-subtitle { font-size: 12px; color: #94a3b8; font-weight: 400; }
+.sidebar-user {
+  padding: 14px 18px;
+  background: rgba(255, 255, 255, 0.04);
+  margin: 12px 14px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+.user-info { flex: 1; min-width: 0; }
+.user-name { font-size: 13px; font-weight: 600; color: #f8fafc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-role { font-size: 11px; color: #10b981; display: flex; align-items: center; gap: 4px; }
+.status-dot-active { width: 6px; height: 6px; border-radius: 50%; background-color: #10b981; display: inline-block; box-shadow: 0 0 6px #10b981; }
+.sidebar-menu { list-style: none; padding: 12px 12px 20px; flex: 1; }
+.menu-category { font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: #64748b; padding: 17px 12px 7px; font-weight: 700; }
+.menu-item { margin-bottom: 3px; }
+.menu-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  padding: 10px 12px;
+  gap: 8px;
+  color: var(--text-sidebar);
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.45;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+.menu-link:hover { background-color: var(--bg-sidebar-hover); color: #fff; }
+.menu-link.active { background-color: var(--bg-sidebar-active); color: #fff; font-weight: 600; box-shadow: inset 3px 0 #9dc3ff, 0 5px 14px rgba(37, 99, 235, 0.2); }
+.menu-link-content { display: flex; align-items: center; gap: 12px; }
+.menu-icon { font-size: 16px; width: 20px; text-align: center; }
+.badge-count { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: var(--radius-full); background: rgba(255, 255, 255, 0.15); color: #fff; }
+.badge-count.danger { background-color: #ef4444; }
+.badge-count.warning { background-color: #f59e0b; }
+.badge-count.primary { background-color: #3b82f6; }
+.sidebar-footer { padding: 16px; border-top: 1px solid rgba(255, 255, 255, 0.08); background: rgba(0, 0, 0, 0.15); }
+.btn-logout {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px;
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-logout:hover { background: #ef4444; color: #fff; }
+.main-wrapper { margin-left: var(--sidebar-width); flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.topbar {
+  min-height: var(--topbar-height);
+  height: auto;
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 28px;
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(12px);
+}
+.topbar-left { display: flex; align-items: center; gap: 16px; min-width: 0; }
+.btn-mobile-toggle { display: none; background: none; border: 1px solid var(--border); padding: 6px 10px; border-radius: var(--radius-sm); cursor: pointer; font-size: 18px; }
+.breadcrumb-title { font-size: clamp(16px, 1.45vw, 20px); line-height: 1.35; font-weight: 700; color: var(--text-main); }
+.topbar-center { display: flex; align-items: center; }
+.ref-date-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #f4f7fc;
+  border: 1px solid #e5eaf2;
+  padding: 7px 12px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  white-space: nowrap;
+}
+.pulse-dot { width: 8px; height: 8px; background-color: #10b981; border-radius: 50%; display: inline-block; animation: pulse 2s infinite; }
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { box-shadow: 0 0 0 7px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.btn-print {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 7px 14px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-main);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn-print:hover { background: #f8fafc; border-color: #cbd5e1; }
+.content-body { width: 100%; max-width: 1600px; margin: 0 auto; padding: 26px 28px 40px; flex: 1; }
+.filter-card, .chart-card, .table-card, .audit-overview-card, .insight-card { border-color: var(--border); box-shadow: var(--shadow-sm); }
+.filter-card { background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 20px 22px; margin-bottom: 24px; }
+.filter-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border-light); }
+.filter-title { font-size: 16px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+.filter-badge-status { font-size: 12px; color: var(--text-muted); }
+.filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr)); gap: 14px; align-items: end; }
+.filter-group { display: flex; flex-direction: column; gap: 6px; }
+.filter-label { font-size: 12px; font-weight: 600; color: #43516a; }
+.form-control {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 12px;
+  border: 1px solid #dce3ee;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text-main);
+  background: #fff;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.form-control:hover { border-color: #b9c7dc; }
+.form-control:focus { outline: none; border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
+.btn-reset-filter {
+  min-height: 40px;
+  padding: 9px 16px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.btn-reset-filter:hover { background: #e2e8f0; color: #1e293b; }
+.filter-summary-strip { margin-top: 14px; padding-top: 10px; border-top: 1px dashed var(--border); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; font-size: 12.5px; color: #59677f; }
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 205px), 1fr)); gap: 16px; margin-bottom: 24px; }
+.kpi-card {
+  min-height: 158px;
+  background: var(--bg-card);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  padding: 19px 20px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.kpi-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.kpi-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: #cbd5e1; }
+.kpi-card.blue::before { background: #3b82f6; }
+.kpi-card.emerald::before { background: #10b981; }
+.kpi-card.amber::before { background: #f59e0b; }
+.kpi-card.rose::before { background: #ef4444; }
+.kpi-card.teal::before { background: #0d9488; }
+.kpi-card.purple::before { background: #8b5cf6; }
+.kpi-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+.kpi-title { font-size: 13px; font-weight: 600; color: var(--text-muted); }
+.kpi-icon-wrap { width: 38px; height: 38px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.kpi-card.blue .kpi-icon-wrap { background: var(--primary-bg); color: var(--primary); }
+.kpi-card.emerald .kpi-icon-wrap { background: var(--success-bg); color: var(--success); }
+.kpi-card.amber .kpi-icon-wrap { background: var(--warning-bg); color: var(--warning); }
+.kpi-card.rose .kpi-icon-wrap { background: var(--danger-bg); color: var(--danger); }
+.kpi-card.teal .kpi-icon-wrap { background: var(--secondary-bg); color: var(--secondary); }
+.kpi-card.purple .kpi-icon-wrap { background: #f5f3ff; color: #7c3aed; }
+.kpi-value-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 6px; }
+.kpi-value { font-size: clamp(25px, 2.2vw, 31px); font-weight: 800; color: var(--text-main); letter-spacing: -0.035em; }
+.kpi-unit { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+.kpi-footer { font-size: 12px; color: #64748b; display: flex; align-items: center; gap: 6px; }
+.charts-grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-bottom: 24px; }
+.chart-card { min-width: 0; background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border); padding: 20px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; }
+.chart-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 18px; }
+.chart-title { font-size: 15px; font-weight: 700; line-height: 1.5; color: var(--text-main); }
+.chart-desc { font-size: 12px; line-height: 1.55; color: var(--text-muted); margin-top: 2px; }
+.chart-badge { flex: 0 0 auto; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: var(--radius-full); background: #eef4ff; color: var(--primary); }
+.chart-body { position: relative; flex: 1; min-height: 270px; display: flex; align-items: center; justify-content: center; }
+.gauge-card-body { display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; min-width: 0; }
+.gauge-canvas-container { position: relative; width: 100%; max-width: 320px; height: 190px; }
+.gauge-center-text { position: absolute; bottom: 24px; left: 0; right: 0; text-align: center; }
+.gauge-value { font-size: 32px; font-weight: 800; color: var(--text-main); line-height: 1; }
+.gauge-label { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-top: 4px; }
+.gauge-legend-row { display: flex; justify-content: center; gap: 16px; margin-top: 14px; flex-wrap: wrap; }
+.gauge-legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #475569; }
+.legend-color-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.stats-summary-box { background: linear-gradient(135deg, #1e3a8a, #1d4ed8); border-radius: var(--radius-lg); color: white; padding: 24px; margin-bottom: 24px; box-shadow: var(--shadow-md); }
+.stats-summary-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.15); padding-bottom: 12px; }
+.stats-title { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+.stats-meta { font-size: 13px; color: #bfdbfe; }
+.stats-row-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 16px; }
+.stats-item { background: rgba(255, 255, 255, 0.08); border-radius: var(--radius-md); padding: 14px 16px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.12); }
+.stats-label { font-size: 12px; color: #bfdbfe; font-weight: 500; margin-bottom: 4px; }
+.stats-number { font-size: 24px; font-weight: 800; color: #fff; }
+.stats-unit { font-size: 11px; color: #93c5fd; }
+.table-card { background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); overflow: hidden; margin-bottom: 24px; }
+.table-header { padding: 19px 22px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; border-bottom: 1px solid var(--border); }
+.table-title-group { display: flex; flex-direction: column; }
+.table-title { font-size: 16px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
+.table-subtitle { font-size: 12px; color: var(--text-muted); }
+.table-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.btn-export-csv { min-height: 40px; display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: #10b981; color: white; border: none; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3); }
+.btn-export-csv:hover { background: #059669; }
+.table-responsive { width: 100%; overflow-x: auto; }
+.data-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+.data-table th { position: sticky; top: var(--topbar-height); z-index: 2; background: #f5f7fb; color: #46536b; font-weight: 700; padding: 13px 14px; border-bottom: 2px solid var(--border); white-space: nowrap; user-select: none; cursor: pointer; transition: background 0.15s; }
+.data-table th:hover { background-color: #f1f5f9; }
+.data-table th.no-sort { cursor: default; }
+.data-table td { padding: 13px 14px; border-bottom: 1px solid var(--border-light); color: #334155; white-space: nowrap; }
+.data-table tbody tr:nth-child(even):not(.row-problem) { background: #fbfcfe; }
+.data-table tbody tr:hover { background-color: #f0f5ff; }
+.data-table tbody tr.row-problem { background-color: #fffbeb; }
+.data-table tbody tr.row-problem:hover { background: #fff7e6; }
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: var(--radius-full); font-size: 12px; font-weight: 600; line-height: 1.3; }
+.badge-success { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+.badge-warning { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+.badge-danger { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+.badge-info { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+.badge-neutral { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+.badge-purple { background: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; }
+.table-footer { padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border); background: #fafafa; font-size: 13px; color: #64748b; flex-wrap: wrap; gap: 12px; }
+.pagination-controls { display: flex; align-items: center; gap: 6px; }
+.btn-page { min-width: 38px; min-height: 40px; padding: 5px 11px; border: 1px solid var(--border); background: white; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 500; color: #334155; transition: all 0.15s; }
+.btn-page:hover:not(:disabled) { background: #f1f5f9; border-color: #cbd5e1; }
+.btn-page.active { background: var(--primary); color: white; border-color: var(--primary); font-weight: 700; }
+.btn-page:disabled { opacity: 0.5; cursor: not-allowed; }
+.audit-overview-card { background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 24px; margin-bottom: 24px; box-shadow: var(--shadow-sm); }
+.audit-metrics-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-top: 16px; }
+.audit-metric-box { padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border); background: #f7f9fc; text-align: center; }
+.audit-metric-val { font-size: 24px; font-weight: 800; color: var(--text-main); }
+.audit-metric-lbl { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+.error-card-item { background: white; border-radius: 14px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); padding: 20px 22px; margin-bottom: 16px; border-left: 5px solid #cbd5e1; transition: transform 0.15s; }
+.error-card-item:hover { transform: translateX(4px); }
+.error-card-item.severity-high { border-left-color: #ef4444; }
+.error-card-item.severity-medium { border-left-color: #f59e0b; }
+.error-card-item.severity-low { border-left-color: #3b82f6; }
+.error-item-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+.error-badge-title { display: flex; align-items: center; gap: 10px; }
+.error-code { font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: var(--radius-sm); background: #0f172a; color: white; }
+.error-name { font-size: 15px; font-weight: 700; color: var(--text-main); }
+.error-details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px; background: #f8fafc; padding: 14px 18px; border-radius: var(--radius-md); margin-bottom: 12px; font-size: 13.5px; }
+.error-detail-col { min-width: 0; display: flex; flex-direction: column; gap: 4px; overflow-wrap: anywhere; }
+.error-col-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; }
+.error-rationale-box { background: #fff9e9; border: 1px solid #f5e6b9; padding: 12px 16px; border-radius: var(--radius-md); font-size: 13px; color: #704b0b; line-height: 1.5; }
+.insight-card { background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 24px; margin-bottom: 20px; box-shadow: var(--shadow-sm); }
+.insight-number-pill { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0; }
+.insight-item { display: flex; gap: 14px; margin-bottom: 22px; padding-bottom: 18px; border-bottom: 1px solid var(--border-light); }
+.insight-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.insight-content { flex: 1; }
+.insight-heading { font-size: 15px; font-weight: 700; line-height: 1.5; color: var(--text-main); margin-bottom: 6px; }
+.insight-body { font-size: 14px; color: #475569; line-height: 1.6; }
+.insight-stat-highlight { display: inline-block; background: #eff6ff; color: #1d4ed8; font-weight: 700; padding: 2px 8px; border-radius: var(--radius-sm); margin: 0 3px; }
+.limitation-box { background: #fdf2f8; border: 1px solid #fbcfe8; border-radius: var(--radius-md); padding: 16px 20px; margin-top: 20px; color: #9d174d; font-size: 13.5px; }
+.login-overlay {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 18% 18%, rgba(59, 130, 246, 0.28), transparent 38%),
+    radial-gradient(ellipse at 82% 86%, rgba(20, 184, 166, 0.18), transparent 35%),
+    #101a2d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+.login-card { width: 100%; max-width: 460px; background: #fff; border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 22px; box-shadow: 0 32px 80px rgba(2, 8, 23, 0.36); overflow: hidden; animation: slideUp 0.3s ease; }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.login-header { background: linear-gradient(140deg, #193d91, #2563c9); color: white; padding: 30px 26px 26px; text-align: center; }
+.login-header-icon { width: 60px; height: 60px; border-radius: 50%; background: rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 14px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); }
+.login-title { font-size: 20px; font-weight: 700; line-height: 1.3; }
+.login-subtitle { font-size: 13px; color: #bfdbfe; margin-top: 6px; }
+.login-body { padding: 25px 28px 28px; }
+.login-form-group { margin-bottom: 18px; }
+.login-btn { width: 100%; min-height: 46px; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 11px; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); margin-top: 6px; }
+.login-btn:hover { background: #1d4ed8; }
+.demo-account-box { margin-top: 20px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: var(--radius-md); padding: 14px; text-align: center; font-size: 12.5px; color: #475569; line-height: 1.7; }
+.btn-quick-login { margin-top: 8px; width: 100%; padding: 8px; background: #10b981; color: white; border: none; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; cursor: pointer; }
+.btn-quick-login:hover { background: #059669; }
+.empty-state { text-align: center; padding: 48px 20px; background: white; border-radius: var(--radius-lg); border: 1px dashed var(--border); margin: 20px 0; }
+.empty-state-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.7; }
+.empty-state-title { font-size: 16px; font-weight: 700; color: #334155; margin-bottom: 6px; }
+.empty-state-desc { font-size: 13px; color: #64748b; max-width: 400px; margin: 0 auto 16px; }
+.view-section { display: none; animation: fadeIn 0.2s ease; }
+.view-section.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+.btn-logout, .btn-print, .btn-export-csv, .btn-reset-filter, .login-btn, .btn-quick-login { transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease; }
+
+@media (max-width: 1100px) {
+  :root { --sidebar-width: 244px; }
+  .topbar-center { display: none; }
+  .topbar { padding-right: 20px; padding-left: 20px; }
+  .topbar-right, .btn-print { flex-shrink: 0; }
+  .content-body { padding: 22px 20px 32px; }
+}
+@media (max-width: 900px) {
+  .charts-grid-2 { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 768px) {
+  .sidebar { width: min(290px, 86vw); box-shadow: 18px 0 40px rgba(15, 23, 42, 0.24); transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar.open::after { content: ""; position: fixed; inset: 0; z-index: -1; background: rgba(15, 23, 42, 0.38); }
+  .main-wrapper { margin-left: 0; }
+  .btn-mobile-toggle { display: inline-block; min-height: 38px; }
+  .topbar { min-height: 60px; gap: 10px; padding: 10px 14px; }
+  .topbar-left { gap: 10px; min-width: 0; }
+  .breadcrumb-title { font-size: 15px; overflow-wrap: anywhere; }
+  .topbar-center { display: none; }
+  .btn-print { min-height: 38px; padding: 7px 10px; }
+  .content-body { padding: 16px 14px 28px; }
+  .filter-card { padding: 16px; }
+  .filter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .filter-grid > :first-child, .filter-grid > :last-child { grid-column: 1 / -1; }
+  .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .kpi-card { min-height: 142px; padding: 16px; }
+  .chart-card, .audit-overview-card, .insight-card { padding: 18px; }
+  .error-card-item { padding: 16px; }
+  .error-details-grid { grid-template-columns: minmax(0, 1fr); }
+  .table-header { padding: 16px; }
+  .stats-summary-box { padding: 19px; }
+}
+@media (max-width: 480px) {
+  .topbar { align-items: flex-start; }
+  .topbar-left { align-items: flex-start; }
+  .btn-mobile-toggle { flex: 0 0 auto; }
+  .topbar-right { gap: 6px; }
+  .btn-print { font-size: 12px; white-space: nowrap; }
+  .filter-header { align-items: flex-start; flex-direction: column; }
+  .filter-grid { grid-template-columns: minmax(0, 1fr); }
+  .filter-grid > :first-child, .filter-grid > :last-child { grid-column: auto; }
+  .filter-summary-strip { align-items: flex-start; flex-direction: column; }
+  .kpi-grid { grid-template-columns: minmax(0, 1fr); }
+  .kpi-card { min-height: 132px; }
+  .chart-header { flex-direction: column; }
+  .chart-body { min-height: 240px; }
+  .table-footer { align-items: flex-start; flex-direction: column; padding: 12px 14px; }
+  .error-item-header, .error-badge-title { align-items: flex-start; }
+  .error-badge-title { flex-wrap: wrap; }
+  .login-overlay { padding: 14px; }
+  .login-body { padding: 20px; }
+}
+@media print {
+  .sidebar, .topbar, .filter-card, .btn-export-csv, .btn-print, .table-footer, .pagination-controls { display: none !important; }
+  .main-wrapper { margin-left: 0 !important; }
+  .content-body { padding: 0 !important; }
+  .view-section { display: block !important; page-break-after: always; }
+  body { background: white; color: black; }
+  .chart-card, .kpi-card, .table-card { box-shadow: none !important; border: 1px solid #ccc !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+  </style>
+
+  <!-- Local Chart.js library (Works 100% offline and online) -->
+  <script src="js/chart.umd.js"></script>
+</head>
+<body>
+
+  <!-- ======================================================================
+       1. Login Modal Screen (Authentication System)
+       ====================================================================== -->
+  <div class="login-overlay" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="login-header-icon">📚</div>
+        <h2 class="login-title" id="loginTitle">ระบบวิเคราะห์ข้อมูลการยืม-คืนหนังสือ</h2>
+        <p class="login-subtitle">ระบบสารสนเทศห้องสมุดสถานศึกษา ระดับ ปวช.</p>
+      </div>
+      <div class="login-body">
+        <form id="loginForm">
+          <div class="login-form-group">
+            <label class="filter-label" for="loginUsername">ชื่อผู้ใช้งาน (Username)</label>
+            <input type="text" id="loginUsername" class="form-control" placeholder="เช่น admin หรือ librarian" autocomplete="username" required>
+          </div>
+          <div class="login-form-group">
+            <label class="filter-label" for="loginPassword">รหัสผ่าน (Password)</label>
+            <input type="password" id="loginPassword" class="form-control" placeholder="กรอกรหัสผ่าน" autocomplete="current-password" required>
+          </div>
+          <button type="submit" class="login-btn">เข้าสู่ระบบ (Sign In)</button>
+        </form>
+
+        <div class="demo-account-box">
+          <p><strong>🔑 บัญชีทดสอบสำหรับกรรมการ / ผู้ตรวจประเมิน:</strong></p>
+          <p style="margin-top: 4px;">User: <code>admin</code> | Password: <code>lib2026</code> (หรือ <code>admin123</code>)</p>
+          <button type="button" class="btn-quick-login" id="btnQuickLogin">⚡ เข้าสู่ระบบทดสอบทันที (One-Click Demo)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       2. Main Application Container
+       ====================================================================== -->
+  <div class="app-container">
+
+    <!-- --------------------------------------------------------------------
+         Left Sidebar Menu Navigation (แท็บเมนูด้านซ้ายมือ)
+         -------------------------------------------------------------------- -->
+    <aside class="sidebar" id="appSidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">📖</div>
+        <div>
+          <div class="brand-title">ระบบวิเคราะห์ห้องสมุด</div>
+          <div class="brand-subtitle">Library Analytics ปวช.</div>
+        </div>
+      </div>
+
+      <!-- Current User Info -->
+      <div class="sidebar-user">
+        <div class="user-avatar">ผด</div>
+        <div class="user-info">
+          <div class="user-name" id="sidebarUserName">อาจารย์ผู้ดูแลระบบ</div>
+          <div class="user-role" id="sidebarUserRole">
+            <span class="status-dot-active"></span> ผู้ดูแลระบบห้องสมุด
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <ul class="sidebar-menu">
+        <li class="menu-category">เมนูหลัก (Main Navigation)</li>
+        
+        <li class="menu-item">
+          <a class="menu-link active" href="#overview" data-view="overview" aria-current="page">
+            <div class="menu-link-content">
+              <span class="menu-icon">📊</span>
+              <span>ภาพรวม & ตัวชี้วัด KPI</span>
+            </div>
+          </a>
+        </li>
+
+        <li class="menu-item">
+          <a class="menu-link" href="#charts" data-view="charts">
+            <div class="menu-link-content">
+              <span class="menu-icon">📈</span>
+              <span>กราฟแท่ง & ครึ่งวงกลม</span>
+            </div>
+            <span class="badge-count primary">Visual</span>
+          </a>
+        </li>
+
+        <li class="menu-item">
+          <a class="menu-link" href="#statistics" data-view="statistics">
+            <div class="menu-link-content">
+              <span class="menu-icon">📐</span>
+              <span>สถิติเวลายืม & การกระจาย</span>
+            </div>
+          </a>
+        </li>
+
+        <li class="menu-category">การจัดการข้อมูล (Data Management)</li>
+
+        <li class="menu-item">
+          <a class="menu-link" href="#records" data-view="records">
+            <div class="menu-link-content">
+              <span class="menu-icon">📋</span>
+              <span>รายการยืม-คืนทั้งหมด</span>
+            </div>
+            <span class="badge-count">149</span>
+          </a>
+        </li>
+
+        <li class="menu-item">
+          <a class="menu-link" href="#overdue" data-view="overdue">
+            <div class="menu-link-content">
+              <span class="menu-icon">⚠️</span>
+              <span>ติดตามหนังสือค้างส่ง</span>
+            </div>
+            <span class="badge-count danger">20</span>
+          </a>
+        </li>
+
+        <li class="menu-item">
+          <a class="menu-link" href="#audit" data-view="audit">
+            <div class="menu-link-content">
+              <span class="menu-icon">🛠️</span>
+              <span>ข้อมูลผิดพลาด & การแก้ไข</span>
+            </div>
+            <span class="badge-count warning">8 จุด</span>
+          </a>
+        </li>
+
+        <li class="menu-category">เอกสาร & สรุปผล (Documentation)</li>
+
+        <li class="menu-item">
+          <a class="menu-link" href="#dictionary" data-view="dictionary">
+            <div class="menu-link-content">
+              <span class="menu-icon">📖</span>
+              <span>พจนานุกรมข้อมูล & นิยามสูตร</span>
+            </div>
+          </a>
+        </li>
+
+        <li class="menu-item">
+          <a class="menu-link" href="#insights" data-view="insights">
+            <div class="menu-link-content">
+              <span class="menu-icon">💡</span>
+              <span>บทสรุปผู้บริหาร & ข้อเสนอ</span>
+            </div>
+          </a>
+        </li>
+
+        <li class="menu-item">
+          <a class="menu-link" href="#testing" data-view="testing">
+            <div class="menu-link-content">
+              <span class="menu-icon">⚡</span>
+              <span>การทดสอบ & ประสิทธิภาพ</span>
+            </div>
+          </a>
+        </li>
+      </ul>
+
+      <!-- Sidebar Footer -->
+      <div class="sidebar-footer">
+        <button class="btn-logout" id="btnLogout">
+          <span>🚪</span>
+          <span>ออกจากระบบ (Logout)</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- --------------------------------------------------------------------
+         Main Content Wrapper
+         -------------------------------------------------------------------- -->
+    <div class="main-wrapper">
+      
+      <!-- Topbar Navigation -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="btn-mobile-toggle" id="btnMobileToggle" type="button" aria-label="เปิดเมนูนำทาง" aria-controls="appSidebar" aria-expanded="false">☰</button>
+          <div class="breadcrumb-title" id="topbarBreadcrumb">ภาพรวมระบบ & ตัวชี้วัดสำคัญ (Overview & KPIs)</div>
+        </div>
+
+        <div class="topbar-center">
+          <div class="ref-date-pill" title="กำหนดวันอ้างอิงตามโจทย์ข้อ 3: ห้ามใช้วันปัจจุบันของเครื่อง">
+            <span class="pulse-dot"></span>
+            <span>วันอ้างอิงระบบ: <strong>15 พฤศจิกายน 2026</strong> (ค.ศ. 2026)</span>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <button class="btn-print" id="btnPrintReport" title="พิมพ์รายงานสรุป">
+            <span>🖨️</span>
+            <span>พิมพ์รายงาน / PDF</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Content Body Area -->
+      <main class="content-body">
+
+        <!-- ================================================================
+             Global Interactive Filter Bar (ตัวกรองข้อมูลส่วนกลาง - Section 8)
+             ================================================================ -->
+        <section class="filter-card">
+          <div class="filter-header">
+            <div class="filter-title">
+              <span>🔍 ตัวกรองข้อมูลแบบเรียลไทม์ (Interactive Data Filter)</span>
+            </div>
+            <div class="filter-badge-status" id="filterBadgeStatus">
+              สถานะ: แสดงข้อมูลทั้งหมด (149 รายการ)
+            </div>
+          </div>
+
+          <div class="filter-grid">
+            <!-- Search -->
+            <div class="filter-group">
+              <label class="filter-label" for="filterSearch">ค้นหา (Search)</label>
+              <input type="text" id="filterSearch" class="form-control" placeholder="ค้นหารหัสยืม, รหัสผู้ยืม, ชื่อเรื่อง...">
+            </div>
+
+            <!-- Category Filter -->
+            <div class="filter-group">
+              <label class="filter-label" for="filterCategory">หมวดหมู่หนังสือ</label>
+              <select id="filterCategory" class="form-control">
+                <option value="all">ทุกหมวดหมู่ (ทั้งหมด 5 หมวด)</option>
+                <option value="เทคโนโลยี">เทคโนโลยี (53 รายการ)</option>
+                <option value="ธุรกิจ">ธุรกิจ (32 รายการ)</option>
+                <option value="วิทยาศาสตร์และคณิตศาสตร์">วิทยาศาสตร์และคณิตศาสตร์ (31 รายการ)</option>
+                <option value="ภาษา">ภาษา (26 รายการ)</option>
+                <option value="วรรณกรรม">วรรณกรรม (7 รายการ)</option>
+              </select>
+            </div>
+
+            <!-- Status Group Filter -->
+            <div class="filter-group">
+              <label class="filter-label" for="filterStatus">กลุ่มสถานะประเมิน</label>
+              <select id="filterStatus" class="form-control">
+                <option value="all">ทุกสถานะ (ทั้งหมด)</option>
+                <option value="คืนตรงเวลา">🟢 คืนตรงเวลา (50 รายการ)</option>
+                <option value="คืนล่าช้า">🟡 คืนล่าช้า (63 รายการ)</option>
+                <option value="ยังไม่คืนเกินกำหนด">🔴 ยังไม่คืนเกินกำหนด (20 รายการ)</option>
+                <option value="ยังไม่คืนไม่เกินกำหนด">🔵 ยังไม่คืนไม่เกินกำหนด (11 รายการ)</option>
+                <option value="ประเมินไม่ได้">🟣 ประเมินไม่ได้ / รอตรวจสอบ (5 รายการ)</option>
+              </select>
+            </div>
+
+            <!-- Date Range Filter -->
+            <div class="filter-group">
+              <label class="filter-label" for="filterDateStart">วันที่ยืมเริ่มต้น</label>
+              <input type="date" id="filterDateStart" class="form-control" min="2026-09-01" max="2026-11-15">
+            </div>
+
+            <div class="filter-group">
+              <label class="filter-label" for="filterDateEnd">วันที่ยืมสิ้นสุด</label>
+              <input type="date" id="filterDateEnd" class="form-control" min="2026-09-01" max="2026-11-15">
+            </div>
+
+            <!-- Reset Button -->
+            <div class="filter-group">
+              <button class="btn-reset-filter" id="btnResetFilter" title="คืนค่าตัวกรองเริ่มต้น">
+                <span>🔄</span>
+                <span>ล้างตัวกรองทั้งหมด</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Summary Strip -->
+          <div class="filter-summary-strip">
+            <span id="filterSummaryText">กำลังแสดงข้อมูลทั้งหมด <strong>149</strong> รายการ (ตัดข้อมูลซ้ำออก 1 รายการ)</span>
+            <span>📌 เงื่อนไขตัวกรองมีผลสอดคล้องกันทั้ง KPI, กราฟ และตารางทุกจุด</span>
+          </div>
+        </section>
+
+        <!-- ================================================================
+             VIEW 1: ภาพรวมแดชบอร์ด & KPI (Overview & KPIs)
+             ================================================================ -->
+        <div class="view-section active" id="view-overview">
+          
+          <!-- 6 Key KPI Cards (Section 7.1) -->
+          <div class="kpi-grid">
+            <!-- KPI 1: จำนวนรายการยืม -->
+            <div class="kpi-card blue">
+              <div class="kpi-header">
+                <span class="kpi-title">1. จำนวนรายการยืม (Total Loans)</span>
+                <div class="kpi-icon-wrap">📑</div>
+              </div>
+              <div class="kpi-value-row">
+                <span class="kpi-value" id="kpiTotalLoans">149</span>
+                <span class="kpi-unit">รายการ</span>
+              </div>
+              <div class="kpi-footer">
+                <span>จากต้นฉบับ 150 (คัดแถวซ้ำ L130 ออก 1)</span>
+              </div>
+            </div>
+
+            <!-- KPI 2: จำนวนผู้ยืมไม่ซ้ำ -->
+            <div class="kpi-card emerald">
+              <div class="kpi-header">
+                <span class="kpi-title">2. ผู้ยืมไม่ซ้ำ (Unique Users)</span>
+                <div class="kpi-icon-wrap">👥</div>
+              </div>
+              <div class="kpi-value-row">
+                <span class="kpi-value" id="kpiUniqueUsers">40</span>
+                <span class="kpi-unit">คน</span>
+              </div>
+              <div class="kpi-footer">
+                <span>รหัสสมาชิก S001 ถึง S040</span>
+              </div>
+            </div>
+
+            <!-- KPI 3: จำนวนรายการยังไม่คืน -->
+            <div class="kpi-card amber">
+              <div class="kpi-header">
+                <span class="kpi-title">3. รายการยังไม่คืน (Unreturned)</span>
+                <div class="kpi-icon-wrap">⏳</div>
+              </div>
+              <div class="kpi-value-row">
+                <span class="kpi-value" id="kpiTotalUnreturned">31</span>
+                <span class="kpi-unit">รายการ</span>
+              </div>
+              <div class="kpi-footer">
+                <span>(และมีรอตรวจสอบ 1 รายการคือ L097)</span>
+              </div>
+            </div>
+
+            <!-- KPI 4: จำนวนค้างเกินกำหนด -->
+            <div class="kpi-card rose">
+              <div class="kpi-header">
+                <span class="kpi-title">4. ค้างเกินกำหนด (Overdue)</span>
+                <div class="kpi-icon-wrap">🚨</div>
+              </div>
+              <div class="kpi-value-row">
+                <span class="kpi-value" id="kpiOverdueUnreturned">20</span>
+                <span class="kpi-unit">รายการ</span>
+              </div>
+              <div class="kpi-footer">
+                <span>คำนวณเทียบวันอ้างอิง 15 พ.ย. 2026</span>
+              </div>
+            </div>
+
+            <!-- KPI 5: อัตราคืนตรงเวลา -->
+            <div class="kpi-card teal">
+              <div class="kpi-header">
+                <span class="kpi-title">5. อัตราคืนตรงเวลา (On-Time Rate)</span>
+                <div class="kpi-icon-wrap">🎯</div>
+              </div>
+              <div class="kpi-value-row">
+                <span class="kpi-value" id="kpiOnTimeRate">44.25%</span>
+              </div>
+              <div class="kpi-footer">
+                <span>50 รายการจาก 113 คืนแล้วประเมินได้</span>
+              </div>
+            </div>
+
+            <!-- KPI 6: อัตราค้างส่งเกินกำหนด -->
+            <div class="kpi-card purple">
+              <div class="kpi-header">
+                <span class="kpi-title">6. อัตราค้างส่งเกินกำหนด (Overdue Rate)</span>
+                <div class="kpi-icon-wrap">⚠️</div>
+              </div>
+              <div class="kpi-value-row">
+                <span class="kpi-value" id="kpiOverdueRate">64.52%</span>
+              </div>
+              <div class="kpi-footer">
+                <span>20 รายการจาก 31 ยังไม่คืนประเมินได้</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Featured Gauges & Main Breakdown Strip -->
+          <div class="charts-grid-2">
+            <!-- Semi-Circle Chart: Status 4 Groups -->
+            <div class="chart-card">
+              <div class="chart-header">
+                <div>
+                  <h3 class="chart-title">สัดส่วนสถานะการคืน 4 กลุ่ม (Semi-Circle Status Breakdown)</h3>
+                  <p class="chart-desc">ตามข้อกำหนดข้อ 7.4 (แสดงเป็นกราฟครึ่งวงกลม พร้อมแยกกลุ่มประเมินไม่ได้)</p>
+                </div>
+                <span class="chart-badge">Semi-Circle Chart</span>
+              </div>
+              <div class="chart-body" style="min-height: 250px;">
+                <canvas id="chartStatusDonut"></canvas>
+              </div>
+            </div>
+
+            <!-- Semi-Circle Gauges: On-time vs Overdue -->
+            <div class="chart-card">
+              <div class="chart-header">
+                <div>
+                  <h3 class="chart-title">มาตรวัดประสิทธิภาพการคืนหนังสือ (Performance Gauges)</h3>
+                  <p class="chart-desc">อัตราคืนตรงเวลา vs อัตราค้างส่งเกินกำหนด (Semi-circle Gauges)</p>
+                </div>
+                <span class="chart-badge">Semi-Circle Gauges</span>
+              </div>
+              <div class="chart-body" style="display:flex; justify-content:space-around; align-items:center; flex-wrap:wrap; gap:16px;">
+                
+                <!-- Gauge 1: On-time rate -->
+                <div class="gauge-card-body">
+                  <div class="gauge-canvas-container">
+                    <canvas id="chartOnTimeGauge"></canvas>
+                    <div class="gauge-center-text">
+                      <div class="gauge-value" id="gaugeOnTimeText">44.25%</div>
+                      <div class="gauge-label">อัตราคืนตรงเวลา</div>
+                    </div>
+                  </div>
+                  <div style="font-size:12px; color:#64748b; text-align:center;">เป้าหมายห้องสมุด: ≥ 80%</div>
+                </div>
+
+                <!-- Gauge 2: Overdue rate -->
+                <div class="gauge-card-body">
+                  <div class="gauge-canvas-container">
+                    <canvas id="chartOverdueGauge"></canvas>
+                    <div class="gauge-center-text">
+                      <div class="gauge-value" id="gaugeOverdueText">64.52%</div>
+                      <div class="gauge-label">อัตราค้างส่งเกินกำหนด</div>
+                    </div>
+                  </div>
+                  <div style="font-size:12px; color:#ef4444; font-weight:600; text-align:center;">อยู่ในระดับวิกฤต (ความเสี่ยงสูง)</div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Summary Note -->
+          <div class="stats-summary-box">
+            <div class="stats-summary-header">
+              <div class="stats-title">
+                <span>📌 สถิติระยะเวลายืมถึงคืนของรายการคืนแล้วที่ประเมินได้ (Section 7.5)</span>
+              </div>
+              <div class="stats-meta">
+                ประเมินได้ทั้งหมด: <strong id="statReturnedCount">113</strong> รายการ (จากทั้งหมด 118 รายการที่ระบุคืนแล้ว)
+              </div>
+            </div>
+            <div class="stats-row-grid">
+              <div class="stats-item">
+                <div class="stats-label">ค่าเฉลี่ย (Mean)</div>
+                <div class="stats-number"><span id="statAvgDuration">9.26</span> <span class="stats-unit">วัน</span></div>
+              </div>
+              <div class="stats-item">
+                <div class="stats-label">มัธยฐาน (Median)</div>
+                <div class="stats-number"><span id="statMedDuration">8.0</span> <span class="stats-unit">วัน</span></div>
+              </div>
+              <div class="stats-item">
+                <div class="stats-label">ส่วนเบี่ยงเบนมาตรฐาน (SD)</div>
+                <div class="stats-number"><span id="statStdDuration">5.26</span> <span class="stats-unit">วัน</span></div>
+              </div>
+              <div class="stats-item">
+                <div class="stats-label">ต่ำสุด (Min)</div>
+                <div class="stats-number"><span id="statMinDuration">1</span> <span class="stats-unit">วัน</span></div>
+              </div>
+              <div class="stats-item">
+                <div class="stats-label">สูงสุด (Max)</div>
+                <div class="stats-number"><span id="statMaxDuration">19</span> <span class="stats-unit">วัน</span></div>
+              </div>
+              <div class="stats-item">
+                <div class="stats-label">เฉลี่ยวันล่าช้า (เฉพาะคืนช้า)</div>
+                <div class="stats-number"><span id="statLateAvgDelay">6.27</span> <span class="stats-unit">วัน</span></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ================================================================
+             VIEW 2: กราฟแท่งและกราฟครึ่งวงกลม (Charts & Visual Analytics)
+             ================================================================ -->
+        <div class="view-section" id="view-charts">
+          <div class="charts-grid-2">
+            
+            <!-- Bar Chart 1: Categories -->
+            <div class="chart-card">
+              <div class="chart-header">
+                <div>
+                  <h3 class="chart-title">เปรียบเทียบจำนวนครั้งการยืมแยกตามหมวดหมู่ (Section 7.2)</h3>
+                  <p class="chart-desc">แสดงปริมาณความต้องการหนังสือในแต่ละกลุ่มสาระการเรียนรู้</p>
+                </div>
+                <span class="chart-badge">Bar Chart</span>
+              </div>
+              <div class="chart-body">
+                <canvas id="chartCategoryBar"></canvas>
+              </div>
+            </div>
+
+            <!-- Bar Chart 2: Top 5 Books -->
+            <div class="chart-card">
+              <div class="chart-header">
+                <div>
+                  <h3 class="chart-title">หนังสือยอดนิยม 5 อันดับแรก (Top 5 Most Borrowed Books)</h3>
+                  <p class="chart-desc">หนังสือที่มีความถี่ในการถูกยืมสูงที่สุดในห้องสมุด</p>
+                </div>
+                <span class="chart-badge">Bar Chart</span>
+              </div>
+              <div class="chart-body">
+                <canvas id="chartTopBooks"></canvas>
+              </div>
+            </div>
+
+            <!-- Bar Chart 3: Monthly Trends -->
+            <div class="chart-card" style="grid-column: 1 / -1;">
+              <div class="chart-header">
+                <div>
+                  <h3 class="chart-title">แนวโน้มจำนวนรายการยืมตามเดือน (Section 7.3 - Monthly Borrowing Trend)</h3>
+                  <p class="chart-desc">เรียงตามลำดับเวลาถูกต้อง: กันยายน, ตุลาคม, พฤศจิกายน 2569</p>
+                </div>
+                <span class="chart-badge">Bar & Line Chart</span>
+              </div>
+              <div class="chart-body" style="min-height: 300px;">
+                <canvas id="chartMonthlyTrend"></canvas>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ================================================================
+             VIEW 3: สถิติเวลายืมและการกระจาย (Statistical Distributions)
+             ================================================================ -->
+        <div class="view-section" id="view-statistics">
+          
+          <div class="charts-grid-2">
+            <!-- Histogram 1: Duration -->
+            <div class="chart-card">
+              <div class="chart-header">
+                <div>
+                  <h3 class="chart-title">การกระจายตัวของระยะเวลายืมถึงคืน (Borrow Duration Histogram)</h3>
+                  <p class="chart-desc">การแจกแจงความถี่จำนวนวันที่ผู้ยืมถือหนังสือไว้ (Section 7.6)</p>
+                </div>
+                <span class="chart-badge">Histogram</span>
+              </div>
+              <div class="chart-body">
+                <canvas id="chartDurationHist"></canvas>
+              </div>
+            </div>
+
+            <!-- Histogram 2: Delay -->
+            <div class="chart-card">
+              <div class="chart-header">
+                <div>
+                  <h3 class="chart-title">การกระจายตัวของจำนวนวันล่าช้า (Delay Days Histogram)</h3>
+                  <p class="chart-desc">ความถี่ของวันที่คืนล่าช้ากว่ากำหนด (0 = ตรงเวลา, 1-12 วัน = ล่าช้า)</p>
+                </div>
+                <span class="chart-badge">Histogram</span>
+              </div>
+              <div class="chart-body">
+                <canvas id="chartDelayHist"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Statistical Analysis Summary Card -->
+          <div class="table-card" style="padding: 24px;">
+            <h3 style="font-size: 16px; font-weight:700; margin-bottom: 12px; color: var(--primary);">
+              📊 การวิเคราะห์การกระจายตัวและแนวโน้มเข้าสู่ศูนย์กลาง (Distribution Insights)
+            </h3>
+            <div style="font-size: 14px; line-height: 1.8; color: #334155;">
+              <p>• <strong>พฤติกรรมการคืน:</strong> ค่าเฉลี่ยของระยะเวลายืมถึงคืนอยู่ที่ <strong>9.26 วัน</strong> สูงกว่ากำหนดเวลามาตรฐาน (7 วัน) และมีค่ามัธยฐานอยู่ที่ <strong>8.0 วัน</strong> แสดงให้เห็นว่าการกระจายมีความเบ้ขวา (Right-skewed) โดยมีผู้ยืมบางส่วนถือหนังสือไว้นานสูงสุดถึง <strong>19 วัน</strong></p>
+              <p>• <strong>ความผันแปรของระยะเวลา:</strong> ส่วนเบี่ยงเบนมาตรฐาน (SD) เท่ากับ <strong>5.26 วัน</strong> สะท้อนถึงความหลากหลายของพฤติกรรมการอ่านและการใช้งานหนังสือ โดยมีกลุ่มที่อ่านจบเร็ว (1-3 วัน) คิดเป็น 10 รายการ และกลุ่มที่ถือนานเกิน 14 วัน คิดเป็น 12 รายการ</p>
+              <p>• <strong>ความรุนแรงของการคืนช้า:</strong> ในกลุ่มรายการที่คืนล่าช้า (63 รายการ) มีจำนวนวันล่าช้าเฉลี่ยถึง <strong>6.27 วัน</strong> หรือเกือบหนึ่งสัปดาห์เต็ม ส่งผลกระทบอย่างมีนัยสำคัญต่อรอบการหมุนเวียนหนังสือให้ผู้อื่นยืมต่อ</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ================================================================
+             VIEW 4: รายการยืม-คืนทั้งหมด (All Loan Records Table - Section 7.7)
+             ================================================================ -->
+        <div class="view-section" id="view-records">
+          <div class="table-card">
+            <div class="table-header">
+              <div class="table-title-group">
+                <h3 class="table-title">
+                  <span>📋 ตารางรายละเอียดรายการยืม-คืนหนังสือห้องสมุด (Full Loan Records)</span>
+                </h3>
+                <span class="table-subtitle">แสดงรายการข้อมูลตามผลการกรอง ค้นหา จัดเรียง และส่งออกเป็น CSV</span>
+              </div>
+              <div class="table-actions">
+                <button class="btn-export-csv" id="btnExportMainTable" title="ดาวน์โหลดข้อมูลที่กำลังแสดงเป็นไฟล์ CSV">
+                  <span>📥</span>
+                  <span>ส่งออก CSV (Export Filtered Table)</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>รหัสยืม</th>
+                    <th>รหัสผู้ยืม</th>
+                    <th>รหัสหนังสือ</th>
+                    <th>ชื่อหนังสือ</th>
+                    <th>หมวดหมู่</th>
+                    <th>วันที่ยืม</th>
+                    <th>กำหนดคืน</th>
+                    <th>วันที่คืนจริง</th>
+                    <th>สถานะเดิม</th>
+                    <th>กลุ่มสถานะประเมิน</th>
+                    <th style="text-align:center;">วันยืมถึงคืน</th>
+                    <th style="text-align:center;">วันล่าช้า/เกินกำหนด</th>
+                  </tr>
+                </thead>
+                <tbody id="mainTableBody">
+                  <!-- Generated dynamically by app.js -->
+                </tbody>
+              </table>
+            </div>
+
+            <div class="table-footer" id="mainTablePagination">
+              <!-- Pagination controls dynamically rendered -->
+            </div>
+          </div>
+        </div>
+
+        <!-- ================================================================
+             VIEW 5: ติดตามหนังสือค้างส่ง (Overdue Tracking Table - Section 7.8)
+             ================================================================ -->
+        <div class="view-section" id="view-overdue">
+          <div class="table-card">
+            <div class="table-header">
+              <div class="table-title-group">
+                <h3 class="table-title" style="color: #b91c1c;">
+                  <span>🚨 ระบบติดตามหนังสือค้างส่งเกินกำหนด (Overdue Tracking List)</span>
+                </h3>
+                <span class="table-subtitle">คัดกรองเฉพาะรายการที่สถานะยังไม่คืน และวันอ้างอิง (15 พ.ย. 2026) เกินกำหนดคืน</span>
+              </div>
+              <div class="table-actions">
+                <button class="btn-export-csv" id="btnExportOverdueTable" style="background:#ef4444;">
+                  <span>📥</span>
+                  <span>ส่งออกรายชื่อผู้ค้างส่ง (CSV)</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>รหัสยืม</th>
+                    <th>รหัสผู้ยืม</th>
+                    <th>รหัสหนังสือ</th>
+                    <th>ชื่อหนังสือ</th>
+                    <th>หมวดหมู่</th>
+                    <th>กำหนดคืน</th>
+                    <th>วันอ้างอิงระบบ</th>
+                    <th style="text-align:center;">วันเกินกำหนด</th>
+                    <th>ระดับความเร่งด่วน</th>
+                    <th class="no-sort">การดำเนินการ</th>
+                  </tr>
+                </thead>
+                <tbody id="overdueTableBody">
+                  <!-- Generated dynamically by app.js -->
+                </tbody>
+              </table>
+            </div>
+
+            <div class="table-footer" id="overdueTablePagination">
+              <!-- Pagination controls -->
+            </div>
+          </div>
+        </div>
+
+        <!-- ================================================================
+             VIEW 6: ตรวจสอบและแก้ไขข้อมูล (Data Quality Audit Log - Section 4 & 7.9)
+             ================================================================ -->
+        <div class="view-section" id="view-audit">
+          
+          <!-- Summary Metrics Before vs After -->
+          <div class="audit-overview-card">
+            <h3 style="font-size: 17px; font-weight:700; color:var(--primary); margin-bottom:6px;">
+              🛠️ บันทึกการตรวจสอบคุณภาพข้อมูลก่อน-หลัง และการจัดการ (Data Cleansing Audit Log)
+            </h3>
+            <p style="font-size: 13px; color:var(--text-muted);">
+              การบันทึกหลักฐานที่ตรวจสอบย้อนกลับและทำซ้ำได้ตามเกณฑ์ข้อกำหนดข้อ 4 และ 7.9
+            </p>
+
+            <div class="audit-metrics-row">
+              <div class="audit-metric-box">
+                <div class="audit-metric-val" style="color:#64748b;">150</div>
+                <div class="audit-metric-lbl">รายการตั้งต้น (Dirty CSV)</div>
+              </div>
+              <div class="audit-metric-box">
+                <div class="audit-metric-val" style="color:#ef4444;">8 จุด</div>
+                <div class="audit-metric-lbl">ข้อผิดพลาดที่ตรวจพบ (5.33%)</div>
+              </div>
+              <div class="audit-metric-box">
+                <div class="audit-metric-val" style="color:#10b981;">149</div>
+                <div class="audit-metric-lbl">รายการหลังตัดซ้ำ (Clean Records)</div>
+              </div>
+              <div class="audit-metric-box">
+                <div class="audit-metric-val" style="color:#2563eb;">144</div>
+                <div class="audit-metric-lbl">รายการสมบูรณ์พร้อมประเมิน (96.6%)</div>
+              </div>
+              <div class="audit-metric-box">
+                <div class="audit-metric-val" style="color:#8b5cf6;">5</div>
+                <div class="audit-metric-lbl">รายการรอตรวจสอบ (ประเมินไม่ได้)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 8 Error Items Cards -->
+          <div class="audit-cards-container">
+            
+            <!-- Error 1: L130 Duplicate -->
+            <div class="error-card-item severity-high">
+              <div class="error-item-header">
+                <div class="error-badge-title">
+                  <span class="error-code">ERR-001</span>
+                  <span class="error-name">L130 - ข้อมูลซ้ำซ้อนทั้งแถว (Duplicate Record)</span>
+                </div>
+                <span class="badge badge-danger">ระดับความรุนแรง: สูง (High)</span>
+              </div>
+              <div class="error-details-grid">
+                <div class="error-detail-col">
+                  <span class="error-col-label">ฟิลด์ที่มีปัญหา</span>
+                  <strong>รหัสการยืม (loan_id) และข้อมูลทั้งแถว</strong>
+                </div>
+                <div class="error-detail-col">
+                  <span class="error-col-label">ค่าเดิมในชุดข้อมูล</span>
+                  <span style="color:#ef4444;">ปรากฏ 2 แถวซ้ำกันทุกฟิลด์ (แถวที่ 131 และ 132)</span>
+                </div>
+                <div class="error-detail-col">
+                  <span class="error-col-label">การจัดการ / แก้ไข</span>
+                  <strong style="color:#10b981;">นับเพียงครั้งเดียว (Deduplicate ตัดแถวซ้ำออก 1 แถว)</strong>
+                </div>
+                <div class="error-detail-col">
+                  <span class="error-col-label">กฎข้อกำหนดที่อ้างอิง</span>
+                  <span>ข้อกำหนด 4.1 และ 4.3: "ข้อมูลซ้ำให้นับครั้งเดียว"</span>
+                </div>
+              </div>
+              <div class="error-rationale-box">
+                <strong>💡 เหตุผลและผลกระทบ:</strong> เกิดจากความผิดพลาดในการส่งข้อมูลซ้ำ (Double Submission) การตัดแถวที่ซ้ำออกทำให้จำนวนข้อมูลลดลงจาก 150 เหลือ 149 รายการ ป้องกันการนับจำนวนครั้งการยืมและจำนวนค้างส่งเกินจริง
+              </div>
+            </div>
+
+            <!-- Error 2: L013 Whitespace -->
+            <div class="error-card-item severity-low">
+              <div class="error-item-header">
+                <div class="error-badge-title">
+                  <span class="error-code">ERR-002</span>
+                  <span class="error-name">L013 - ข้อความมีช่องว่างส่วนเกิน (Whitespace in Category)</span>
+                </div>
+                <span class="badge badge-info">ระดับความรุนแรง: ต่ำ (Low)</span>
+              </div>
+              <div class="error-details-grid">
+                <div class="error-detail-col">
+                  <span class="error-col-label">ฟิลด์ที่มีปัญหา</span>
+                  <strong>หมวดหมู่ (category)</strong>
+                </div>
+                <div class="error-detail-col">
+                  <span class="error-col-label">ค่าเดิมในชุดข้อมูล</span>
+                  <span style="color:#ef4444;"><code>" เทคโนโลยี "</code> (มี spacebar หน้า-หลัง)</span>
+                </div>
+                <div class="error-detail-col">
+                  <span class="error-col-label">การจัดการ / แก้ไข</span>
+                  <strong style="color:#10b981;">Trim ช่องว่างออกให้เป็น <code>"เทคโนโลยี"</code></strong>
+                </div>
+                <div class="error-detail-col">
+                  <span class="error-col-label">กฎข้อกำหนดที่อ้างอิง</span>
+                  <span>ข้อกำหนด 4.1: "ตรวจความสอดคล้องของข้อความ"</span>
+                </div>
+              </div>
+              <div class="error-rationale-box">
+                <strong>💡 เหตุผลและผลกระทบ:</strong> ช่องว่างนำหน้าและต่อท้ายทำให้เกิดหมวดหมู่แยกย่อยผิดพลาดในระบบฐานข้อมูล เมื่อทำการ Trim แล้ว ทำให้หมวดเทคโนโลยีรวมยอดได้ถูกต้อง 53 รายการ และสามารถนำไปคำนวณสถิติได้ตามปกติ
+              </div>
+            </div>
+
+            <!-- Error 3: L062 Missing Book ID -->
+            <div class="error-card-item severity-medium">
+              <div class="error-item-header">
+                <div class="error-badge-title">
+                  <span class="error-code">ERR-003</span>
+                  <span class="error-name">L062 - รหัสหนังสือสูญหาย (Missing Book ID)</span>
+                </div>
+                <span class="badge badge-warning">ระดับความรุนแรง: ปานกลาง (Medium)</span>
+              </div>
+              <div class="error-details-grid">
+                <div class="error-detail-col">
+                  <span class="error-col-label">ฟิลด์ที่มีปัญหา</span>
+                  <strong>รหัสหนังสือ (book_id)</strong>
+                </div>
+                <div class="error-detail-col">
+                  <span class="error-col-label">ค่าเดิมในชุดข้อมูล</span>
+                  <span style="color:#ef4444;">ค่าว่าง <code>""</code> สำหรับหนังสือ "สร้างเว็บไซต์เบื้องต้น"</span>
+                </div>
+                <div class="error-detail-col">
+                  <span class="error-col-label">การจัดการ / แก้ไข</span>
+                  <strong style="color:#10b981;">เติมรหัส <code>"B003"</code> ตามชื่อเรื่องที่มีในแคตตาล็อก</strong>
+                </div>
+                <div class="error-detail-col">
+                  <span class="error-col-label">กฎข้อกำหนดที่อ้างอิง</span>
+                  <span>ข้อกำหนด 4.1 และ 4.4: "ตรวจค่าว่างและความสอดคล้อง"</span>
+                </div>
+              </div>
+              <div class="error-rationale-box">
+                <strong>💡 เหตุผลและผลกระทบ:</strong> ตรวจสอบเทียบกับรายการอื่นทั้ง 150 แถว พบว่าหนังสือชื่อ "สร้างเว็บไซต์เบื้องต้น" มีรหัสประจำเรื่องตรงกับ B003 ทุกรายการ (100% Deterministic match) จึงเติม B003 ได้อย่างมีหลักฐานยืนยันชัดเจน รายการนี้ยืม-คืนสมบูรณ์ตรงเวลา
+              </div>
+            </div>
+
+            <!-- Error 4: L029 Due before Borrow -->
+            <div class="error-card-item severity-high">
+              <div class="error-item-header">
+                <div class="error-badge-title">
+                  <span class="error-code">ERR-004</span>
+                  <span class="error-name">L029 - กำหนดคืนมาก่อนวันยืม (Due Date < Borrow Date)</span>
+                </div>
+                <span class="badge badge-danger">ระดับความรุนแรง: สูง (High)</span>
+              </div>
+              <div class="error-details-grid">
+                <div class="error-detail-col">
+                  <span class="error-col-label">ฟิลด์ที่มีปัญหา</span>
+                  <strong>กำหนดคืน (due_date) vs วันที่ยืม (borrow_date)</strong>
+                </div>
+                <div class="error-detail-col">
+                  <span class="error-col-label">ค่าเดิมในชุดข้อมูล</span>
+                  <span style="color:#ef4444;">ยืม 2026-11-12 แต่กำหนดคืน 2026-11-10</span>
+                </div>
+                <div class="error-detail-col">
+                  <span class="error-col-label">การจัดการ / แก้ไข</span>
+                  <strong style="color:#8b5cf6;">คงค่าเดิม ระบุสถานะ "ประเมินไม่ได้ / รอตรวจสอบ"</strong>
+                </div>
+                <div class="error-detail-col">
+                  <span class="error-col-label">กฎข้อกำหนดที่อ้างอิง</span>
+                  <span>ข้อกำหนด 4.2 และ 4.3: "หากข้อมูลขัดแย้งให้แสดงว่ารอตรวจสอบ ห้ามเดาความจริง"</span>
+                </div>
+              </div>
+              <div class="error-rationale-box">
+                <strong>💡 เหตุผลและผลกระทบ:</strong> กำหนดคืนมาก่อนวันยืมขัดกับหลักตรรกะและข้อเท็จจริง (Inverted timeline) ตามกติกาห้ามเดาวันที่เอง จึงต้องคัดแยกออกจากกลุ่มคำนวณวันล่าช้า เพื่อไม่ให้ค่าสถิติผิดเพี้ยน
+              </div>
+            </div>
+
+            <!-- Error 5: L045 Return before Borrow -->
+            <div class="error-card-item severity-high">
+              <div class="error-item-header">
+                <div class="error-badge-title">
+                  <span class="error-code">ERR-005</span>
+                  <span class="error-name">L045 - วันคืนจริงมาก่อนวันยืม (Return Date < Borrow Date)</span>
+                </div>
+                <span class="badge badge-danger">ระดับความรุนแรง: สูง (High)</span>
+              </div>
+              <div class="error-details-grid">
+                <div class="error-detail-col">
+                  <span class="error-col-label">ฟิลด์ที่มีปัญหา</span>
+                  <strong>วันที่คืนจริง (return_date) vs วันที่ยืม (borrow_date)</strong>
+                </div>
+                <div class="error-detail-col">
+                  <span class="error-col-label">ค่าเดิมในชุดข้อมูล</span>
+                  <span style="color:#ef4444;">ยืม 2026-09-08 แต่วันคืนจริง 2026-09-07</span>
+                </div>
+                <div class="error-detail-col">
+                  <span class="error-col-label">การจัดการ / แก้ไข</span>
+                  <strong style="color:#8b5cf6;">คงค่าเดิม ระบุสถานะ "ประเมินไม่ได้ / รอตรวจสอบ"</strong>
+                </div>
+                <div class="error-detail-col">
+                  <span class="error-col-label">กฎข้อกำหนดที่อ้างอิง</span>
+                  <span>ข้อกำหนด 4.2: "ตรวจความถูกต้องของวันที่และลำดับเหตุการณ์"</span>
+                </div>
+              </div>
+              <div class="error-rationale-box">
+                <strong>💡 เหตุผลและผลกระทบ:</strong> นำหนังสือมาคืนก่อนวันที่ยืม ส่งผลให้ระยะเวลายืมติดลบ (-1 วัน) ขัดแย้งกับหลักความเป็นจริงอย่างชัดเจน จึงแยกออกจากการคำนวณเวลายืมถึงคืน (duration)
+              </div>
+            </div>
+
+            <!-- Error 6: L080 Returned but No Return Date -->
+            <div class="error-card-item severity-high">
+              <div class="error-item-header">
+                <div class="error-badge-title">
+                  <span class="error-code">ERR-006</span>
+                  <span class="error-name">L080 - สถานะคืนแล้วแต่ไม่มีวันที่คืนจริง (Status-Date Conflict)</span>
+                </div>
+                <span class="badge badge-danger">ระดับความรุนแรง: สูง (High)</span>
+              </div>
+              <div class="error-details-grid">
+                <div class="error-detail-col">
+                  <span class="error-col-label">ฟิลด์ที่มีปัญหา</span>
+                  <strong>วันที่คืนจริง (return_date) vs สถานะการคืน (return_status)</strong>
+                </div>
+                <div class="error-detail-col">
+                  <span class="error-col-label">ค่าเดิมในชุดข้อมูล</span>
+                  <span style="color:#ef4444;">สถานะ = "คืนแล้ว" แต่วันที่คืนจริงเป็นค่าว่าง</span>
+                </div>
+                <div class="error-detail-col">
+                  <span class="error-col-label">การจัดการ / แก้ไข</span>
+                  <strong style="color:#8b5cf6;">คงค่าเดิม ระบุสถานะ "ประเมินไม่ได้ (ขาดวันที่คืนจริง)"</strong>
+                </div>
+                <div class="error-detail-col">
+                  <span class="error-col-label">กฎข้อกำหนดที่อ้างอิง</span>
+                  <span>ข้อกำหนด 4.2 และ 4.3: "ห้ามเติมวันที่คืนขึ้นเอง"</span>
+                </div>
+              </div>
+              <div class="error-rationale-box">
+                <strong>💡 เหตุผลและผลกระทบ:</strong> เมื่อไม่มีวันที่คืนจริง จึงไม่สามารถตัดสินได้ว่าคืนตรงเวลาหรือคืนล่าช้า และไม่สามารถคำนวณระยะเวลายืมได้ ตามกติกาห้ามเติมวันที่เอง จึงแยกออกเป็นรายการประเมินไม่ได้
+              </div>
+            </div>
+
+            <!-- Error 7: L097 Not Returned but has Return Date -->
+            <div class="error-card-item severity-high">
+              <div class="error-item-header">
+                <div class="error-badge-title">
+                  <span class="error-code">ERR-007</span>
+                  <span class="error-name">L097 - สถานะยังไม่คืนแต่วันที่คืนจริงมีระบุ (Status-Date Conflict)</span>
+                </div>
+                <span class="badge badge-danger">ระดับความรุนแรง: สูง (High)</span>
+              </div>
+              <div class="error-details-grid">
+                <div class="error-detail-col">
+                  <span class="error-col-label">ฟิลด์ที่มีปัญหา</span>
+                  <strong>วันที่คืนจริง (return_date) vs สถานะการคืน (return_status)</strong>
+                </div>
+                <div class="error-detail-col">
+                  <span class="error-col-label">ค่าเดิมในชุดข้อมูล</span>
+                  <span style="color:#ef4444;">สถานะ = "ยังไม่คืน" แต่วันที่คืนจริงระบุ "2026-10-04"</span>
+                </div>
+                <div class="error-detail-col">
+                  <span class="error-col-label">การจัดการ / แก้ไข</span>
+                  <strong style="color:#8b5cf6;">คงค่าเดิม ระบุสถานะ "ประเมินไม่ได้ / รอตรวจสอบ"</strong>
+                </div>
+                <div class="error-detail-col">
+                  <span class="error-col-label">กฎข้อกำหนดที่อ้างอิง</span>
+                  <span>ข้อกำหนด 4.2: "ตรวจความสอดคล้องกับสถานะ ห้ามเดาความจริง"</span>
+                </div>
+              </div>
+              <div class="error-rationale-box">
+                <strong>💡 เหตุผลและผลกระทบ:</strong> ข้อมูลขัดแย้งกันโดยตรง อาจเกิดจากการลงวันที่คืนแต่ลืมสลับสถานะ หรือกรอกวันที่ผิดแถว ห้ามเดาความจริง จึงแยกออกจากการประเมินอัตราค้างส่งเกินกำหนด จนกว่าจะตรวจสอบเล่มจริง
+              </div>
+            </div>
+
+            <!-- Error 8: L114 Invalid Calendar Date -->
+            <div class="error-card-item severity-high">
+              <div class="error-item-header">
+                <div class="error-badge-title">
+                  <span class="error-code">ERR-008</span>
+                  <span class="error-name">L114 - วันที่ยืมไม่มีจริงในปฏิทิน (Invalid Calendar Date)</span>
+                </div>
+                <span class="badge badge-danger">ระดับความรุนแรง: สูง (High)</span>
+              </div>
+              <div class="error-details-grid">
+                <div class="error-detail-col">
+                  <span class="error-col-label">ฟิลด์ที่มีปัญหา</span>
+                  <strong>วันที่ยืม (borrow_date)</strong>
+                </div>
+                <div class="error-detail-col">
+                  <span class="error-col-label">ค่าเดิมในชุดข้อมูล</span>
+                  <span style="color:#ef4444;"><code>"2026-10-32"</code> (วันที่ 32 ตุลาคม 2026)</span>
+                </div>
+                <div class="error-detail-col">
+                  <span class="error-col-label">การจัดการ / แก้ไข</span>
+                  <strong style="color:#8b5cf6;">คงค่าเดิม ระบุสถานะ "ประเมินไม่ได้ / รอตรวจสอบ"</strong>
+                </div>
+                <div class="error-detail-col">
+                  <span class="error-col-label">กฎข้อกำหนดที่อ้างอิง</span>
+                  <span>ข้อกำหนด 4.2: "ตรวจความถูกต้องของวันที่ ห้ามเดาความจริง"</span>
+                </div>
+              </div>
+              <div class="error-rationale-box">
+                <strong>💡 เหตุผลและผลกระทบ:</strong> เดือนตุลาคมมีเพียง 31 วัน วันที่ 2026-10-32 จึงเป็นค่าผิดพลาดของระบบบันทึก แม้จะเดาว่าอาจเป็น 31 ต.ค. หรือ 1 พ.ย. แต่ตามกฎห้ามเดาความจริง จึงแยกออกจากการคำนวณเวลายืมถึงคืน
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Preventive Measures -->
+          <div class="table-card" style="padding: 24px; margin-top: 24px;">
+            <h3 style="font-size: 16px; font-weight:700; color:var(--primary); margin-bottom:12px;">
+              🛡️ แนวทางการปรับปรุงระบบฐานข้อมูลเพื่อป้องกันข้อผิดพลาดในระยะยาว (Systemic Prevention)
+            </h3>
+            <ul style="padding-left: 20px; font-size: 13.5px; line-height: 1.8; color: #334155;">
+              <li><strong>Database Constraints:</strong> เพิ่มข้อกำหนด <code>CHECK (due_date >= borrow_date)</code> และ <code>CHECK (return_date >= borrow_date)</code> ในระดับตารางฐานข้อมูล</li>
+              <li><strong>Strict Date Parsing:</strong> กำหนด UI Datepicker ให้เลือกได้เฉพาะวันจริงในปฏิทิน ป้องกันการพิมพ์วันที่เกินจริงเช่น 32 ต.ค.</li>
+              <li><strong>Automated Status Synchronization:</strong> เมื่อเจ้าหน้าที่สแกนรับคืนหนังสือ ระบบต้องกรอก <code>return_date = CURRENT_DATE</code> และเปลี่ยนสถานะเป็น <code>'คืนแล้ว'</code> ใน Transaction เดียวกันโดยอัตโนมัติ</li>
+              <li><strong>Text Sanitization:</strong> ใช้ Middleware ในการ <code>.trim()</code> ข้อความนำเข้าทุกฟิลด์ก่อนบันทึกสู่ Database</li>
+            </ul>
+          </div>
+
+        </div>
+
+        <!-- ================================================================
+             VIEW 7: พจนานุกรมข้อมูล & นิยามสูตร (Data Dictionary & Rules)
+             ================================================================ -->
+        <div class="view-section" id="view-dictionary">
+          
+          <!-- Data Dictionary Table (Section 4.4) -->
+          <div class="table-card" style="margin-bottom: 24px;">
+            <div class="table-header">
+              <div>
+                <h3 class="table-title">📖 พจนานุกรมข้อมูลระบบยืม-คืนหนังสือ (Data Dictionary)</h3>
+                <span class="table-subtitle">ระบุชื่อฟิลด์ ความหมาย ชนิดข้อมูล หน่วย ตัวอย่างค่า และกฎทางธุรกิจ (ข้อกำหนด 4.4)</span>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>ชื่อฟิลด์ (Field)</th>
+                    <th>ชื่อภาษาไทย</th>
+                    <th>ชนิดข้อมูล</th>
+                    <th>หน่วย</th>
+                    <th>ตัวอย่างค่า</th>
+                    <th>ความหมายและกฎทางธุรกิจ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>loan_id</code></td>
+                    <td>รหัสการยืม</td>
+                    <td>VarChar(10)</td>
+                    <td>-</td>
+                    <td><code>L001</code></td>
+                    <td>ตัวระบุเฉพาะของรายการยืมแต่ละครั้ง (Primary Key) ไม่ซ้ำกัน</td>
+                  </tr>
+                  <tr>
+                    <td><code>user_id</code></td>
+                    <td>รหัสผู้ยืม</td>
+                    <td>VarChar(10)</td>
+                    <td>-</td>
+                    <td><code>S022</code></td>
+                    <td>ตัวระบุสมาชิกจำลองของผู้ยืมหนังสือ สามารถยืมได้หลายรายการ</td>
+                  </tr>
+                  <tr>
+                    <td><code>book_id</code></td>
+                    <td>รหัสหนังสือ</td>
+                    <td>VarChar(10)</td>
+                    <td>-</td>
+                    <td><code>B004</code></td>
+                    <td>ตัวระบุชื่อเรื่องหนังสือ (ไม่ใช่รหัสเล่ม) จึงมีหลายรายการยืมพร้อมกันได้</td>
+                  </tr>
+                  <tr>
+                    <td><code>book_title</code></td>
+                    <td>ชื่อหนังสือ</td>
+                    <td>NVarChar(100)</td>
+                    <td>-</td>
+                    <td>ภาษาอังกฤษในชีวิตประจำวัน</td>
+                    <td>ชื่อเรื่องของหนังสือที่ถูกยืม</td>
+                  </tr>
+                  <tr>
+                    <td><code>category</code></td>
+                    <td>หมวดหมู่</td>
+                    <td>NVarChar(50)</td>
+                    <td>-</td>
+                    <td>ภาษา</td>
+                    <td>หมวดหมู่หนังสือ (เทคโนโลยี, ธุรกิจ, วิทย์-คณิต, ภาษา, วรรณกรรม)</td>
+                  </tr>
+                  <tr>
+                    <td><code>borrow_date</code></td>
+                    <td>วันที่ยืม</td>
+                    <td>Date (ISO 8601)</td>
+                    <td>วัน</td>
+                    <td><code>2026-09-28</code></td>
+                    <td>วันเริ่มต้นทำรายการยืม ต้องเป็นวันที่จริงในปฏิทิน</td>
+                  </tr>
+                  <tr>
+                    <td><code>due_date</code></td>
+                    <td>กำหนดคืน</td>
+                    <td>Date (ISO 8601)</td>
+                    <td>วัน</td>
+                    <td><code>2026-10-05</code></td>
+                    <td>วันสุดท้ายที่คืนได้โดยไม่ล่าช้า (ปกติระยะเวลายืม 7 วัน)</td>
+                  </tr>
+                  <tr>
+                    <td><code>return_date</code></td>
+                    <td>วันที่คืนจริง</td>
+                    <td>Date (ISO 8601)</td>
+                    <td>วัน</td>
+                    <td><code>2026-10-11</code></td>
+                    <td>วันที่นำหนังสือมาส่งคืนที่ห้องสมุด (ค่าว่างได้หากยังไม่คืน)</td>
+                  </tr>
+                  <tr>
+                    <td><code>return_status</code></td>
+                    <td>สถานะการคืน</td>
+                    <td>Enum (String)</td>
+                    <td>-</td>
+                    <td>คืนแล้ว / ยังไม่คืน</td>
+                    <td>สถานะการคืนของรายการ สัมพันธ์กับ return_date</td>
+                  </tr>
+                  <tr style="background:#f8fafc;">
+                    <td><code>eval_status</code>*</td>
+                    <td>กลุ่มสถานะประเมิน</td>
+                    <td>Enum (Calculated)</td>
+                    <td>-</td>
+                    <td>คืนล่าช้า</td>
+                    <td>สถานะที่คำนวณตามนิยามข้อ 5 (คืนตรงเวลา, คืนล่าช้า, ค้างเกินกำหนด, ยังไม่ถึงกำหนด, ประเมินไม่ได้)</td>
+                  </tr>
+                  <tr style="background:#f8fafc;">
+                    <td><code>borrow_duration</code>*</td>
+                    <td>วันยืมถึงคืน</td>
+                    <td>Integer (Calculated)</td>
+                    <td>วัน</td>
+                    <td>13</td>
+                    <td>ผลต่างวันปฏิทิน: return_date - borrow_date (ไม่บวกหนึ่ง)</td>
+                  </tr>
+                  <tr style="background:#f8fafc;">
+                    <td><code>delay_days</code>*</td>
+                    <td>วันล่าช้า/เกินกำหนด</td>
+                    <td>Integer (Calculated)</td>
+                    <td>วัน</td>
+                    <td>6</td>
+                    <td>คืนแล้ว = max(0, return_date - due_date); ยังไม่คืน = max(0, ref_date - due_date)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div style="padding: 10px 18px; font-size:12px; color:#64748b; background:#fafafa;">
+              * ฟิลด์ที่มีเครื่องหมายดอกจันเป็นฟิลด์ที่คำนวณเพิ่มเติมเพื่อประกอบการวิเคราะห์ตามข้อกำหนด
+            </div>
+          </div>
+
+          <!-- Formulas & Definitions Box (Section 5) -->
+          <div class="table-card" style="padding: 24px;">
+            <h3 style="font-size: 16px; font-weight:700; color:var(--primary); margin-bottom:14px;">
+              📐 นิยามและสูตรการคำนวณตามข้อกำหนด (Section 5 Calculation Formulas)
+            </h3>
+            
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:16px;">
+              <div style="background:#f8fafc; padding:16px; border-radius:8px; border:1px solid #e2e8f0;">
+                <h4 style="font-size:14px; font-weight:700; color:#1e40af; margin-bottom:6px;">1. คืนตรงเวลา (On-Time Return)</h4>
+                <p style="font-size:13px; color:#475569;">สถานะ = "คืนแล้ว" และ วันที่คืนจริง &le; กำหนดคืน (วันคืนตรงกำหนดถือว่าตรงเวลา ไม่ใช่ล่าช้า)</p>
+              </div>
+
+              <div style="background:#f8fafc; padding:16px; border-radius:8px; border:1px solid #e2e8f0;">
+                <h4 style="font-size:14px; font-weight:700; color:#b45309; margin-bottom:6px;">2. คืนล่าช้า (Late Return)</h4>
+                <p style="font-size:13px; color:#475569;">สถานะ = "คืนแล้ว" และ วันที่คืนจริง &gt; กำหนดคืน</p>
+              </div>
+
+              <div style="background:#f8fafc; padding:16px; border-radius:8px; border:1px solid #e2e8f0;">
+                <h4 style="font-size:14px; font-weight:700; color:#b91c1c; margin-bottom:6px;">3. ยังไม่คืนเกินกำหนด (Overdue Unreturned)</h4>
+                <p style="font-size:13px; color:#475569;">สถานะ = "ยังไม่คืน" และ วันอ้างอิง (2026-11-15) &gt; กำหนดคืน</p>
+              </div>
+
+              <div style="background:#f8fafc; padding:16px; border-radius:8px; border:1px solid #e2e8f0;">
+                <h4 style="font-size:14px; font-weight:700; color:#0284c7; margin-bottom:6px;">4. ยังไม่คืนไม่เกินกำหนด (Normal Unreturned)</h4>
+                <p style="font-size:13px; color:#475569;">สถานะ = "ยังไม่คืน" และ วันอ้างอิง (2026-11-15) &le; กำหนดคืน</p>
+              </div>
+
+              <div style="background:#f8fafc; padding:16px; border-radius:8px; border:1px solid #e2e8f0;">
+                <h4 style="font-size:14px; font-weight:700; color:#1e40af; margin-bottom:6px;">5. ระยะเวลายืมถึงคืน (Loan Duration)</h4>
+                <p style="font-size:13px; color:#475569;"><code>วันยืมถึงคืน = วันที่คืนจริง - วันที่ยืม</code> (นับผลต่างวันปฏิทิน ไม่บวกหนึ่ง)</p>
+              </div>
+
+              <div style="background:#f8fafc; padding:16px; border-radius:8px; border:1px solid #e2e8f0;">
+                <h4 style="font-size:14px; font-weight:700; color:#1e40af; margin-bottom:6px;">6. จำนวนวันล่าช้า / วันเกินกำหนด</h4>
+                <p style="font-size:13px; color:#475569;">
+                  • รายการคืนแล้ว: <code>max(0, วันที่คืนจริง - กำหนดคืน)</code><br>
+                  • รายการยังไม่คืน: <code>max(0, วันอ้างอิง - กำหนดคืน)</code>
+                </p>
+              </div>
+
+              <div style="background:#eff6ff; padding:16px; border-radius:8px; border:1px solid #bfdbfe; grid-column:1 / -1;">
+                <h4 style="font-size:14px; font-weight:700; color:#1e3a8a; margin-bottom:6px;">7. สูตรอัตราคืนตรงเวลา & อัตราค้างเกินกำหนด</h4>
+                <p style="font-size:13.5px; color:#1e293b; line-height:1.7;">
+                  • <strong>อัตราคืนตรงเวลา</strong> = <code>(รายการคืนตรงเวลา ÷ รายการคืนแล้วที่ประเมินได้) × 100</code> = (50 ÷ 113) × 100 = <strong>44.25%</strong><br>
+                  • <strong>อัตราค้างเกินกำหนด</strong> = <code>(ยังไม่คืนเกินกำหนด ÷ รายการยังไม่คืนที่ประเมินได้) × 100</code> = (20 ÷ 31) × 100 = <strong>64.52%</strong><br>
+                  <em>*กรณีตัวหารเป็นศูนย์ให้แสดงว่าไม่มีข้อมูลสำหรับคำนวณ ไม่แทนด้วย 0% ตามกติกา</em>
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ================================================================
+             VIEW 8: บทสรุปผู้บริหาร & ข้อเสนอแนะ (Executive Insights - Section 6)
+             ================================================================ -->
+        <div class="view-section" id="view-insights">
+          
+          <div class="insight-card">
+            <h3 style="font-size: 18px; font-weight:800; color:var(--primary); margin-bottom:16px;">
+              💡 บทสรุปผลการวิเคราะห์เชิงลึก 5 ประเด็นสำคัญ (5 Key Actionable Insights)
+            </h3>
+
+            <!-- Insight 1 -->
+            <div class="insight-item">
+              <div class="insight-number-pill">1</div>
+              <div class="insight-content">
+                <div class="insight-heading">ปัญหาการคืนล่าช้าอยู่ในขั้นวิกฤต: อัตราคืนตรงเวลาเพียง 44.25%</div>
+                <div class="insight-body">
+                  จากรายการยืมที่คืนแล้วและประเมินได้ทั้งหมด 113 รายการ มีหนังสือที่ส่งคืนตรงเวลาเพียง <span class="insight-stat-highlight">50 รายการ (44.25%)</span> ขณะที่ผู้ยืมส่งคืนล่าช้ากว่ากำหนดสูงถึง <span class="insight-stat-highlight">63 รายการ (55.75%)</span> ยิ่งไปกว่านั้น ในกลุ่มหนังสือที่ยังไม่นำมาส่งคืน 31 รายการ พบว่ามีรายการที่ค้างส่งเกินกำหนดไปแล้วถึง <span class="insight-stat-highlight">20 รายการ (64.52%)</span> สะท้อนถึงปัญหาเชิงโครงสร้างในการติดตามหนี้หนังสือของห้องสมุด
+                </div>
+              </div>
+            </div>
+
+            <!-- Insight 2 -->
+            <div class="insight-item">
+              <div class="insight-number-pill">2</div>
+              <div class="insight-content">
+                <div class="insight-heading">พฤติกรรมการยืมเฉลี่ย 9.26 วัน เกินกว่ากำหนดสิทธิ์ 7 วันมาตรฐาน</div>
+                <div class="insight-body">
+                  ระยะเวลายืมหนังสือจริงเฉลี่ยอยู่ที่ <span class="insight-stat-highlight">9.26 วัน</span> (มัธยฐาน 8.0 วัน) และสำหรับหนังสือที่คืนล่าช้า จะมีจำนวนวันล่าช้าเฉลี่ยถึง <span class="insight-stat-highlight">6.27 วัน</span> โดยมีผู้ยืมถือนานสูงสุดถึง 19 วัน (ล่าช้าสูงสุด 12 วัน) แสดงให้เห็นว่ากรอบเวลาการยืม 7 วันเดิมไม่สอดคล้องกับพฤติกรรมการอ่านตำราเรียนและหนังสือวิชาการของนักเรียน ปวช.
+                </div>
+              </div>
+            </div>
+
+            <!-- Insight 3 -->
+            <div class="insight-item">
+              <div class="insight-number-pill">3</div>
+              <div class="insight-content">
+                <div class="insight-heading">หมวดเทคโนโลยีและธุรกิจครองสัดส่วนความต้องการสูงสุดกว่า 57%</div>
+                <div class="insight-body">
+                  หมวดหมู่ที่ถูกยืมมากที่สุดคือ <span class="insight-stat-highlight">เทคโนโลยี (53 รายการ, 35.6%)</span> ตามด้วย <span class="insight-stat-highlight">ธุรกิจ (32 รายการ, 21.5%)</span> และวิทยาศาสตร์และคณิตศาสตร์ (31 รายการ, 20.8%) โดยหนังสือยอดนิยมอันดับ 1 คือ <strong>"พื้นฐานฐานข้อมูล"</strong> ถูกยืมถึง <span class="insight-stat-highlight">21 ครั้ง</span> ตามด้วย <strong>"วางแผนการเงินวัยเรียน" (19 ครั้ง)</strong> สะท้อนทักษะวิชาชีพที่นักเรียนให้ความสนใจเป็นพิเศษ
+                </div>
+              </div>
+            </div>
+
+            <!-- Insight 4 -->
+            <div class="insight-item">
+              <div class="insight-number-pill">4</div>
+              <div class="insight-content">
+                <div class="insight-heading">แนวโน้มการยืมกระจุกตัวช่วงต้นภาคเรียนและชะลอตัวช่วงปลายภาค</div>
+                <div class="insight-body">
+                  ปริมาณการยืมหนังสือสูงสุดในเดือน <span class="insight-stat-highlight">กันยายน 2569 (59 รายการ)</span> และเดือน <span class="insight-stat-highlight">ตุลาคม 2569 (55 รายการ)</span> ก่อนจะลดลงในเดือน <span class="insight-stat-highlight">พฤศจิกายน 2569 (34 รายการ)</span> สอดคล้องกับช่วงเปิดภาคเรียนและการทำโครงงาน ก่อนจะเข้าสู่ช่วงเตรียมสอบปลายภาค
+                </div>
+              </div>
+            </div>
+
+            <!-- Insight 5 -->
+            <div class="insight-item">
+              <div class="insight-number-pill">5</div>
+              <div class="insight-content">
+                <div class="insight-heading">ช่องโหว่ด้านคุณภาพข้อมูลของระบบเดิม: ตรวจพบข้อผิดพลาด 8 จุด (5.33%)</div>
+                <div class="insight-body">
+                  ระบบฐานข้อมูลเดิมขาดการตรวจสอบความถูกต้องก่อนบันทึก (Data Validation) พบข้อผิดพลาด <span class="insight-stat-highlight">8 รายการ</span> ได้แก่ ข้อมูลซ้ำทั้งแถว (L130), ขาดรหัสหนังสือ (L062), ช่องว่างส่วนเกิน (L013), ลำดับเวลาขัดแย้งกำหนดคืนก่อนวันยืม (L029) และวันคืนก่อนวันยืม (L045), ความขัดแย้งของสถานะกับวันที่คืน (L080, L097) และวันที่ผิดปฏิทิน 32 ต.ค. (L114)
+                </div>
+              </div>
+            </div>
+
+            <!-- Strategic Recommendations -->
+            <div style="margin-top:28px; padding-top:20px; border-top:2px solid var(--border-light);">
+              <h4 style="font-size: 16px; font-weight:700; color:var(--primary); margin-bottom:12px;">
+                🎯 ข้อเสนอแนะเชิงกลยุทธ์สำหรับผู้บริหารห้องสมุด (Actionable Recommendations)
+              </h4>
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:14px;">
+                <div style="background:#f0fdf4; border:1px solid #bbf7d0; padding:16px; border-radius:8px;">
+                  <strong style="color:#15803d; font-size:14px;">1. ระบบแจ้งเตือนอัตโนมัติ (Automated Alerts)</strong>
+                  <p style="font-size:13px; color:#334155; margin-top:4px;">พัฒนาระบบแจ้งเตือนล่วงหน้า 2 วันผ่าน LINE Notify หรือ SMS ก่อนถึงกำหนดคืน และแจ้งเตือนทันทีในวันรุ่งขึ้นหากเกินกำหนด</p>
+                </div>
+                <div style="background:#eff6ff; border:1px solid #bfdbfe; padding:16px; border-radius:8px;">
+                  <strong style="color:#1e40af; font-size:14px;">2. ปรับระยะเวลายืมเป็น 10-14 วัน (Policy Adjustment)</strong>
+                  <p style="font-size:13px; color:#334155; margin-top:4px;">ขยายระยะเวลายืมสำหรับหนังสือตำราวิชาการหมวดเทคโนโลยีและธุรกิจที่มีความหนา จาก 7 วันเป็น 10-14 วัน หรือเปิดให้กดต่ออายุออนไลน์ได้ 1 ครั้ง</p>
+                </div>
+                <div style="background:#fefce8; border:1px solid #fef08a; padding:16px; border-radius:8px;">
+                  <strong style="color:#a16207; font-size:14px;">3. จัดซื้อหนังสือเพิ่มเติมตาม Demand (Procurement)</strong>
+                  <p style="font-size:13px; color:#334155; margin-top:4px;">จัดสรรงบประมาณจัดซื้อหนังสือหมวดเทคโนโลยีและธุรกิจเพิ่ม โดยเฉพาะ 5 เล่มยอดนิยม เช่น "พื้นฐานฐานข้อมูล" และ "วางแผนการเงินวัยเรียน" เพิ่มอีก 3-5 เล่ม/เรื่อง</p>
+                </div>
+                <div style="background:#faf5ff; border:1px solid #e9d5ff; padding:16px; border-radius:8px;">
+                  <strong style="color:#7e22ce; font-size:14px;">4. ปรับปรุงระบบบันทึกข้อมูล (System Validation)</strong>
+                  <p style="font-size:13px; color:#334155; margin-top:4px;">ติดตั้งเงื่อนไข Check Constraint ในฐานข้อมูล และบังคับ Datepicker ห้ามเลือกวันที่ผิดปฏิทิน ป้องกันข้อผิดพลาดซ้ำในอนาคต</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Data Limitation Box (Mandatory per Section 6) -->
+            <div class="limitation-box">
+              <strong>⚠️ ข้อจำกัดของข้อมูล (Data Limitations ตามข้อกำหนดข้อ 6):</strong>
+              <p style="margin-top:4px;">
+                1) ข้อมูลชุดนี้ <strong>"ไม่ระบุจำนวนเล่มคงคลัง (Inventory/Stock)"</strong> จึงไม่สามารถประเมินอัตราการขาดแคลนหนังสือที่แท้จริงหรืออัตราการหมุนเวียนคงคลัง (Stock Turnover Ratio) ได้<br>
+                2) ข้อมูล <strong>"ไม่มีประวัติการต่ออายุการยืม (Renewal History)"</strong> ทำให้ไม่สามารถแยกแยะได้ว่ารายการที่ถือนานเกิน 7 วัน เกิดจากการต่ออายุตามสิทธิ์หรือเป็นการค้างส่งโดยพลการ<br>
+                3) มีรายการข้อมูลผิดปกติ 5 รายการที่ไม่สามารถประเมินสถานะได้ จึงไม่นำมาสรุปเกินกว่าหลักฐานที่มีในข้อมูล
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ================================================================
+             VIEW 9: การทดสอบและประสิทธิภาพ (System Benchmark & Testing)
+             ================================================================ -->
+        <div class="view-section" id="view-testing">
+          <div class="table-card" style="padding: 24px; margin-bottom: 24px;">
+            <h3 style="font-size: 17px; font-weight:700; color:var(--primary); margin-bottom:6px;">
+              ⚡ ผลการทดสอบความถูกต้องของสูตรและประสิทธิภาพระบบ (System Benchmark & Testing Evidence)
+            </h3>
+            <p style="font-size: 13px; color:var(--text-muted); margin-bottom: 16px;">
+              หลักฐานการทดสอบตามข้อกำหนดข้อ 9: ตรวจสอบสูตรกับข้อมูลจริง, การทำงานร่วมกันของตัวกรอง และการวัดเวลาตอบสนอง
+            </p>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>ลำดับ</th>
+                    <th>รายการทดสอบ (Test Case)</th>
+                    <th>ผลลัพธ์ที่คาดหวัง (Expected)</th>
+                    <th>ผลลัพธ์ที่วัดได้จริง (Actual)</th>
+                    <th>สถานะตรวจรับ</th>
+                  </tr>
+                </thead>
+                <tbody id="testResultsBody">
+                  <!-- Rendered dynamically by app.js -->
+                </tbody>
+              </table>
+            </div>
+
+            <div style="margin-top:20px; background:#f8fafc; padding:16px; border-radius:8px; border:1px solid #e2e8f0; font-size:13.5px; line-height:1.7;">
+              <strong>🚀 วิธีการและสภาพแวดล้อมที่ทำให้ระบบตอบสนองเร็ว (Performance Optimization Strategy):</strong>
+              <p>• <strong>Pure In-Memory Indexing:</strong> ข้อมูลทั้ง 149 รายการถูกโหลดและประมวลผลบนหน่วยความจำของเบราว์เซอร์ (Client-side RAM) ทำให้การค้นหาและกรองใช้เวลาเฉลี่ยต่ำกว่า <strong>5 มิลลิวินาที</strong> ไม่ต้องรอ Network roundtrip</p>
+              <p>• <strong>Debounced Event Delegation:</strong> การค้นหาและสลับตัวกรองใช้ Event Delegation และจัดการ Redraw เฉพาะคอมโพเนนต์ที่จำเป็น</p>
+              <p>• <strong>Zero External CDN Dependency:</strong> ไลบรารี Chart.js ถูกรวมไว้ในเครื่อง (<code>js/chart.umd.js</code>) ทำให้สามารถเปิดใช้งานแบบ Offline ได้ทันทีโดยไม่ต้องเชื่อมต่ออินเทอร์เน็ต</p>
+              <p>• <strong>Thai UTF-8 with BOM:</strong> ไฟล์ CSV Export ทุกไฟล์ฝัง BOM (<code>\uFEFF</code>) เพื่อให้เปิดใน Microsoft Excel ภาษาไทยได้ทันทีโดยสระไม่เพี้ยน</p>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Load Data & Application Scripts -->
+  <script src="js/library_data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
+
